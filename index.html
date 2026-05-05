@@ -362,9 +362,62 @@
   .fade-up {
     opacity: 0;
     transform: translateY(30px);
-    transition: opacity 0.6s ease, transform 0.6s ease;
+    transition: opacity 0.65s ease, transform 0.65s ease, box-shadow 0.65s ease;
+    transition-delay: var(--reveal-delay, 0ms);
   }
   .fade-up.visible { opacity: 1; transform: translateY(0); }
+  .reveal-left,
+  .reveal-right,
+  .reveal-scale {
+    opacity: 0;
+    transition: opacity 0.7s ease, transform 0.7s ease, box-shadow 0.7s ease, border-color 0.7s ease;
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+  .reveal-left { transform: translateX(-42px); }
+  .reveal-right { transform: translateX(42px); }
+  .reveal-scale { transform: translateY(18px) scale(0.94); }
+  .reveal-left.visible,
+  .reveal-right.visible,
+  .reveal-scale.visible {
+    opacity: 1;
+    transform: translateX(0) translateY(0) scale(1);
+  }
+  .skill-pill.reveal-scale {
+    opacity: 0;
+    transform: translateY(14px) scale(0.92);
+    transition: opacity 0.5s ease, transform 0.5s ease, border-color 0.2s, color 0.2s;
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+  .skill-pill.reveal-scale.visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  .timeline-item.reveal-left {
+    opacity: 0;
+    transform: translateX(-38px);
+    transition: opacity 0.7s ease, transform 0.7s ease, border-color 0.7s ease;
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+  .timeline-item.reveal-left.visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  .timeline.visible::before {
+    box-shadow: 0 0 20px rgba(124,106,247,0.42);
+  }
+  .project-card.reveal-scale {
+    opacity: 0;
+    --reveal-scale: 0.94;
+    transition: opacity 0.7s ease, border-color 0.25s, box-shadow 0.25s, transform 0.7s ease;
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+  .project-card.reveal-scale.visible {
+    opacity: 1;
+    --reveal-scale: 1;
+  }
+  .research-card.visible {
+    box-shadow: 0 18px 54px rgba(124,106,247,0.18), 0 0 34px rgba(247,194,106,0.08);
+  }
 
   /* ── Sections ── */
   section { padding: 100px 48px; max-width: 1200px; margin: 0 auto; }
@@ -422,6 +475,7 @@
     left: 0; top: 8px; bottom: 0;
     width: 1px;
     background: linear-gradient(to bottom, var(--accent), transparent);
+    transition: box-shadow 0.7s ease;
   }
   .timeline-item {
     position: relative;
@@ -487,7 +541,7 @@
     backdrop-filter: blur(20px);
     box-shadow: 0 18px 48px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.06);
     transform-style: preserve-3d;
-    transform: translateY(var(--parallax-y, 0px)) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
+    transform: translateY(var(--parallax-y, 0px)) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg)) scale(var(--reveal-scale, 1));
     transition: border-color 0.25s, box-shadow 0.25s, transform 0.2s;
     position: relative;
     overflow: hidden;
@@ -514,7 +568,7 @@
   .project-card:hover {
     border-color: rgba(247,194,106,0.42);
     box-shadow: 0 24px 60px rgba(124,106,247,0.2), 0 0 34px rgba(124,106,247,0.12), inset 0 1px 0 rgba(255,255,255,0.1);
-    transform: translateY(calc(var(--parallax-y, 0px) - 6px)) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
+    transform: translateY(calc(var(--parallax-y, 0px) - 6px)) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg)) scale(var(--reveal-scale, 1));
   }
   .project-card:hover::before { opacity: 1; }
   .project-card:hover::after { opacity: 1; }
@@ -1576,16 +1630,33 @@
   }
 
   // Scroll reveal
+  const setReveal = (selector, className, delayStep = 70) => {
+    document.querySelectorAll(selector).forEach((el, index) => {
+      el.classList.add(className);
+      el.style.setProperty('--reveal-delay', `${index * delayStep}ms`);
+    });
+  };
+
+  setReveal('#about .skill-pill', 'reveal-scale', 45);
+  setReveal('#experience .timeline-item', 'reveal-left', 120);
+  setReveal('#projects .project-card', 'reveal-scale', 85);
+  setReveal('#contact .contact-text', 'reveal-left', 0);
+  setReveal('#contact .contact-links', 'reveal-right', 0);
+  setReveal('#education > *', 'reveal-left', 90);
+  setReveal('#achievements > *', 'reveal-scale', 90);
+
   const obs = new IntersectionObserver(entries => {
     entries.forEach(e => {
       if (e.isIntersecting) {
         e.target.classList.add('visible');
+        const delay = parseFloat(getComputedStyle(e.target).getPropertyValue('--reveal-delay')) || 0;
+        window.setTimeout(() => e.target.style.setProperty('--reveal-delay', '0ms'), delay + 800);
         obs.unobserve(e.target);
       }
     });
   }, { threshold: 0.12 });
 
-  document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
+  document.querySelectorAll('.fade-up, .reveal-left, .reveal-right, .reveal-scale').forEach(el => obs.observe(el));
 
   // Live previews
   document.querySelectorAll('.preview-frame').forEach(frame => {
