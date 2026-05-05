@@ -13,13 +13,17 @@
     --surface2: #1a1a26;
     --accent: #7c6af7;
     --accent2: #f7c26a;
+    --accent3: #6af7c7;
     --text: #e8e8f0;
     --muted: #7070a0;
     --border: rgba(124,106,247,0.18);
     --glow: rgba(124,106,247,0.25);
+    --glass: rgba(18,18,26,0.58);
+    --glass-strong: rgba(22,22,34,0.78);
   }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   html { scroll-behavior: smooth; }
+  ::selection { background: rgba(247,194,106,0.28); color: #fff; }
 
   body {
     background:
@@ -92,15 +96,20 @@
   /* ── Nav ── */
   nav {
     position: fixed;
-    top: 0; left: 0; right: 0;
+    top: 18px; left: 50%;
+    width: min(1120px, calc(100% - 48px));
+    transform: translateX(-50%);
     z-index: 100;
-    padding: 18px 48px;
+    padding: 12px 16px 12px 20px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    backdrop-filter: blur(20px);
-    background: rgba(10,10,15,0.75);
+    backdrop-filter: blur(24px);
+    background: rgba(10,10,15,0.68);
     border-bottom: 1px solid var(--border);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 999px;
+    box-shadow: 0 20px 52px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,255,255,0.08);
   }
   .nav-logo {
     font-family: 'Syne', sans-serif;
@@ -109,24 +118,30 @@
     color: var(--accent);
     letter-spacing: -0.02em;
   }
-  .nav-links { display: flex; gap: 32px; list-style: none; }
+  .nav-links { display: flex; gap: 4px; list-style: none; }
   .nav-links a {
     font-family: 'DM Mono', monospace;
     font-size: 0.78rem;
     color: var(--muted);
     text-decoration: none;
-    transition: color 0.2s;
+    padding: 8px 11px;
+    border-radius: 999px;
+    transition: color 0.2s, background 0.2s, box-shadow 0.2s;
     letter-spacing: 0.06em;
     text-transform: uppercase;
   }
-  .nav-links a:hover { color: var(--text); }
+  .nav-links a:hover {
+    color: var(--text);
+    background: rgba(255,255,255,0.06);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06);
+  }
 
   /* ── Hero ── */
   #hero {
     min-height: 100vh;
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(280px, 420px);
-    gap: 48px;
+    gap: clamp(36px, 6vw, 76px);
     align-items: center;
     padding: 0 48px;
     position: relative;
@@ -158,39 +173,51 @@
   .hero-tag {
     font-family: 'DM Mono', monospace;
     font-size: 0.75rem;
-    color: var(--accent);
+    width: fit-content;
+    padding: 8px 13px;
+    border: 1px solid rgba(124,106,247,0.22);
+    border-radius: 999px;
+    background: rgba(255,255,255,0.045);
+    color: var(--accent3);
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    margin-bottom: 18px;
+    margin-bottom: 22px;
     display: flex;
     align-items: center;
     gap: 10px;
   }
   .hero-tag::before {
     content: '';
-    width: 32px; height: 1px;
-    background: var(--accent);
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent3);
+    box-shadow: 0 0 18px var(--accent3);
   }
   h1.hero-name {
     font-family: 'Syne', sans-serif;
     font-weight: 800;
-    font-size: clamp(2.8rem, 7vw, 5.5rem);
-    line-height: 1.02;
-    letter-spacing: -0.03em;
-    margin-bottom: 20px;
+    font-size: clamp(3rem, 7.4vw, 6.4rem);
+    line-height: 0.96;
+    letter-spacing: -0.045em;
+    margin-bottom: 24px;
   }
-  h1.hero-name span { color: var(--accent); }
+  h1.hero-name span {
+    color: transparent;
+    background: linear-gradient(90deg, var(--accent3), var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
   .hero-title {
     font-family: 'DM Mono', monospace;
     font-size: clamp(0.85rem, 2vw, 1rem);
-    color: var(--muted);
+    color: #a8a8cf;
     margin-bottom: 28px;
     letter-spacing: 0.04em;
   }
   .hero-desc {
-    font-size: 1.05rem;
-    color: #b0b0cc;
-    max-width: 520px;
+    font-size: clamp(1.02rem, 1.5vw, 1.16rem);
+    color: #b8b8d2;
+    max-width: 590px;
     line-height: 1.7;
     margin-bottom: 40px;
   }
@@ -199,8 +226,8 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 12px 28px;
-    border-radius: 4px;
+    padding: 13px 24px;
+    border-radius: 999px;
     font-family: 'DM Mono', monospace;
     font-size: 0.82rem;
     letter-spacing: 0.06em;
@@ -208,18 +235,19 @@
     text-decoration: none;
     cursor: pointer;
     border: none;
-    transition: all 0.22s;
+    transition: transform 0.22s, box-shadow 0.22s, border-color 0.22s, background 0.22s, color 0.22s;
   }
   .btn-primary {
-    background: var(--accent);
+    background: linear-gradient(135deg, var(--accent), #9b7bff);
     color: #fff;
+    box-shadow: 0 14px 34px rgba(124,106,247,0.24);
   }
   section,
   footer {
     position: relative;
     z-index: 1;
   }
-  .btn-primary:hover { background: #9080ff; transform: translateY(-2px); }
+  .btn-primary:hover { background: linear-gradient(135deg, #9080ff, var(--accent3)); transform: translateY(-3px); box-shadow: 0 18px 42px rgba(124,106,247,0.34); }
   .btn-cv {
     position: relative;
     overflow: hidden;
@@ -259,11 +287,11 @@
   .btn-cv:hover::before { transform: translateX(130%) skewX(-18deg); }
   .btn-cv:hover .btn-icon { transform: translateY(2px); }
   .btn-outline {
-    background: transparent;
+    background: rgba(255,255,255,0.035);
     color: var(--text);
-    border: 1px solid var(--border);
+    border: 1px solid rgba(255,255,255,0.12);
   }
-  .btn-outline:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+  .btn-outline:hover { border-color: var(--accent3); color: var(--accent3); transform: translateY(-3px); box-shadow: 0 14px 34px rgba(106,247,199,0.12); }
 
   .hero-visual {
     position: relative;
@@ -497,17 +525,22 @@
   .section-label {
     font-family: 'DM Mono', monospace;
     font-size: 0.72rem;
-    color: var(--accent);
+    width: fit-content;
+    padding: 6px 10px;
+    border: 1px solid rgba(124,106,247,0.2);
+    border-radius: 999px;
+    background: rgba(255,255,255,0.035);
+    color: var(--accent3);
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    margin-bottom: 12px;
+    margin-bottom: 16px;
   }
   h2.section-title {
     font-family: 'Syne', sans-serif;
-    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-size: clamp(2rem, 4.6vw, 3.25rem);
     font-weight: 800;
     letter-spacing: -0.03em;
-    margin-bottom: 56px;
+    margin-bottom: 64px;
     line-height: 1.1;
   }
 
@@ -543,10 +576,10 @@
   /* About */
   .about-card {
     max-width: 860px;
-    padding: 34px;
+    padding: 38px;
     border: 1px solid var(--border);
-    border-radius: 14px;
-    background: linear-gradient(145deg, rgba(18,18,26,0.72), rgba(18,18,26,0.36));
+    border-radius: 24px;
+    background: linear-gradient(145deg, rgba(18,18,26,0.78), rgba(18,18,26,0.38));
     backdrop-filter: blur(18px);
     box-shadow: 0 18px 48px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.06);
     position: relative;
@@ -659,16 +692,16 @@
   .projects-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 20px;
+    gap: 24px;
     perspective: 1200px;
   }
   .project-card {
     background: linear-gradient(145deg, rgba(18,18,26,0.74), rgba(18,18,26,0.38));
     border: 1px solid rgba(124,106,247,0.2);
-    border-radius: 14px;
-    padding: 18px;
+    border-radius: 22px;
+    padding: 20px;
     backdrop-filter: blur(20px);
-    box-shadow: 0 18px 48px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.06);
+    box-shadow: 0 22px 56px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.06);
     transform-style: preserve-3d;
     transform: translateY(var(--parallax-y, 0px)) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg)) scale(var(--reveal-scale, 1));
     transition: border-color 0.25s, box-shadow 0.25s, transform 0.2s;
@@ -709,10 +742,10 @@
     transform: translateZ(18px);
   }
   .project-preview {
-    height: 210px;
-    margin-bottom: 22px;
+    height: 224px;
+    margin-bottom: 24px;
     border: 1px solid rgba(124,106,247,0.22);
-    border-radius: 14px;
+    border-radius: 18px;
     background: #0b0b14;
     box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 16px 34px rgba(0,0,0,0.18);
     overflow: hidden;
@@ -833,7 +866,6 @@
     background: linear-gradient(180deg, var(--accent2), var(--accent));
   }
   .preview-ddialer .preview-scene,
-  .preview-sms .preview-scene,
   .preview-hosting .preview-scene {
     background: radial-gradient(circle at 78% 28%, rgba(124,106,247,0.32), transparent 30%), linear-gradient(135deg, #121225, #080910);
   }
@@ -872,10 +904,6 @@
   .preview-ddialer .preview-bar:nth-child(2) { height: 72%; }
   .preview-ddialer .preview-bar:nth-child(3) { height: 48%; }
   .preview-ddialer .preview-bar:nth-child(4) { height: 88%; }
-  .preview-sms .preview-bar:nth-child(1) { height: 40%; }
-  .preview-sms .preview-bar:nth-child(2) { height: 66%; }
-  .preview-sms .preview-bar:nth-child(3) { height: 52%; }
-  .preview-sms .preview-bar:nth-child(4) { height: 82%; }
   .preview-domain-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -902,7 +930,6 @@
   }
   .preview-landing .preview-body > div:first-child,
   .preview-company .preview-body > div:first-child,
-  .preview-ai .preview-body > div:last-child,
   .preview-event .preview-body > div:last-child,
   .preview-food .preview-body > div:last-child {
     display: grid;
@@ -952,24 +979,6 @@
   .preview-node:nth-of-type(3) { left: 38%; top: 62%; animation-delay: 0.4s; }
   .preview-node:nth-of-type(4) { left: 66%; top: 34%; animation-delay: 0.8s; }
   .preview-node:nth-of-type(5) { left: 82%; top: 68%; animation-delay: 1.1s; }
-  .preview-ai .preview-scene {
-    background: linear-gradient(135deg, #06110f, #111029);
-  }
-  .preview-ai .preview-body { grid-template-columns: 1fr 0.8fr; }
-  .preview-ai .vision-frame {
-    border-radius: 8px;
-    border: 1px solid rgba(106,247,199,0.26);
-    background: linear-gradient(135deg, rgba(106,247,199,0.12), rgba(124,106,247,0.18));
-    position: relative;
-  }
-  .preview-ai .vision-frame::before {
-    content: '';
-    position: absolute;
-    inset: 22px 30px;
-    border: 1px solid rgba(247,194,106,0.72);
-    box-shadow: 0 0 18px rgba(247,194,106,0.18);
-  }
-  .preview-ai .preview-title { color: #6af7c7; font-size: 1.04rem; }
   .preview-event .preview-scene,
   .preview-food .preview-scene { background: #f7f8fb; color: #151925; }
   .preview-event .preview-body,
@@ -1004,16 +1013,21 @@
   .project-type {
     font-family: 'DM Mono', monospace;
     font-size: 0.68rem;
-    color: var(--muted);
+    width: fit-content;
+    padding: 5px 9px;
+    border-radius: 999px;
+    background: rgba(124,106,247,0.08);
+    border: 1px solid rgba(124,106,247,0.14);
+    color: var(--accent3);
     letter-spacing: 0.1em;
     text-transform: uppercase;
     margin-bottom: 10px;
   }
   .project-name {
     font-family: 'Syne', sans-serif;
-    font-size: 1.15rem;
+    font-size: 1.24rem;
     font-weight: 700;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
     letter-spacing: -0.01em;
   }
   .project-desc {
@@ -1031,10 +1045,11 @@
   .tech-tag {
     font-family: 'DM Mono', monospace;
     font-size: 0.65rem;
-    padding: 3px 8px;
-    background: var(--surface2);
-    border-radius: 4px;
-    color: var(--muted);
+    padding: 5px 9px;
+    background: rgba(255,255,255,0.055);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 999px;
+    color: #a8a8c6;
     letter-spacing: 0.04em;
   }
   .project-links { display: flex; gap: 12px; }
@@ -1054,10 +1069,10 @@
 
   /* ── Research ── */
   .research-card {
-    background: var(--surface);
+    background: linear-gradient(145deg, rgba(18,18,26,0.78), rgba(18,18,26,0.38));
     border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 36px;
+    border-radius: 24px;
+    padding: 40px;
     position: relative;
     overflow: hidden;
   }
@@ -1101,7 +1116,7 @@
     position: relative;
     overflow: hidden;
     padding: 34px;
-    border-radius: 16px;
+    border-radius: 24px;
     border: 1px solid rgba(247,194,106,0.24);
     background:
       linear-gradient(145deg, rgba(18,18,26,0.76), rgba(18,18,26,0.38)),
@@ -1188,7 +1203,7 @@
     position: relative;
     min-height: 170px;
     padding: 22px;
-    border-radius: 14px;
+    border-radius: 22px;
     border: 1px solid rgba(124,106,247,0.22);
     background: linear-gradient(145deg, rgba(18,18,26,0.72), rgba(18,18,26,0.34));
     backdrop-filter: blur(18px);
@@ -1583,47 +1598,6 @@
     </div>
 
     <div class="project-card">
-      <div class="project-preview preview-sms" aria-hidden="true">
-        <div class="preview-dots"><span></span><span></span><span></span></div>
-        <iframe class="preview-frame" src="https://bulksms.dialdynamic.com" loading="lazy" title="BULK SMS preview"></iframe>
-        <div class="preview-fallback preview-scene">
-          <div class="preview-nav"><span class="preview-logo">BULK SMS</span><span class="preview-menu"><span>Campaigns</span><span>Reports</span></span></div>
-          <div class="preview-body preview-dashboard">
-            <div class="preview-panel preview-sidebar">
-              <span class="preview-line"></span>
-              <span class="preview-line"></span>
-              <span class="preview-btn"></span>
-            </div>
-            <div>
-              <div class="preview-metrics">
-                <span class="preview-stat"></span>
-                <span class="preview-stat"></span>
-              </div>
-              <div class="preview-panel preview-chart">
-                <span class="preview-bar"></span>
-                <span class="preview-bar"></span>
-                <span class="preview-bar"></span>
-                <span class="preview-bar"></span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="project-type">Professional · Marketing</div>
-      <div class="project-name">BULK SMS Platform</div>
-      <p class="project-desc">Enterprise-grade SMS marketing solution with campaign management, detailed analytics, contact segmentation, and automated scheduling.</p>
-      <div class="project-tech">
-        <span class="tech-tag">PHP</span>
-        <span class="tech-tag">MySQL</span>
-        <span class="tech-tag">REST APIs</span>
-        <span class="tech-tag">JavaScript</span>
-      </div>
-      <div class="project-links">
-        <a href="https://bulksms.dialdynamic.com" target="_blank" class="project-link">↗ Live Demo</a>
-      </div>
-    </div>
-
-    <div class="project-card">
       <div class="project-preview preview-hosting" aria-hidden="true">
         <div class="preview-dots"><span></span><span></span><span></span></div>
         <iframe class="preview-frame" src="https://sayeb12.github.io/ddhoster/" loading="lazy" title="DDHOSTER preview"></iframe>
@@ -1753,36 +1727,6 @@
       </div>
       <div class="project-links">
         <a href="https://sayeb12.github.io/particle-system/" target="_blank" class="project-link">↗ Live Demo</a>
-      </div>
-    </div>
-
-    <div class="project-card">
-      <div class="project-preview preview-ai" aria-hidden="true">
-        <div class="preview-dots"><span></span><span></span><span></span></div>
-        <div class="preview-scene">
-          <div class="preview-nav"><span class="preview-logo">HAR AI</span><span class="preview-menu"><span>Vision</span><span>Model</span></span></div>
-          <div class="preview-body">
-            <div class="vision-frame"></div>
-            <div>
-              <div class="preview-title">Activity Recognition</div>
-              <div class="preview-copy"></div>
-              <div class="preview-copy short"></div>
-              <div class="preview-stat"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="project-type">Academic · Deep Learning</div>
-      <div class="project-name">Human Activity Recognition</div>
-      <p class="project-desc">Thesis project: real-time CV system for elderly care monitoring. Achieved 92% accuracy on benchmark datasets using CNN and LSTM architectures.</p>
-      <div class="project-tech">
-        <span class="tech-tag">Python</span>
-        <span class="tech-tag">TensorFlow</span>
-        <span class="tech-tag">PyTorch</span>
-        <span class="tech-tag">OpenCV</span>
-      </div>
-      <div class="project-links">
-        <a href="https://github.com/sayeb12" target="_blank" class="project-link">↗ GitHub</a>
       </div>
     </div>
 
