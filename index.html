@@ -384,6 +384,7 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 20px;
+    perspective: 1200px;
   }
   .project-card {
     background: linear-gradient(145deg, rgba(18,18,26,0.74), rgba(18,18,26,0.38));
@@ -408,12 +409,29 @@
     opacity: 0;
     transition: opacity 0.25s;
   }
+  .project-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(circle at var(--glare-x, 50%) var(--glare-y, 0%), rgba(247,194,106,0.16), transparent 38%);
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
   .project-card:hover {
     border-color: rgba(247,194,106,0.42);
     box-shadow: 0 24px 60px rgba(124,106,247,0.2), 0 0 34px rgba(124,106,247,0.12), inset 0 1px 0 rgba(255,255,255,0.1);
     transform: translateY(calc(var(--parallax-y, 0px) - 6px)) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
   }
   .project-card:hover::before { opacity: 1; }
+  .project-card:hover::after { opacity: 1; }
+  .project-card > * {
+    position: relative;
+    z-index: 1;
+  }
+  .project-card > :not(.project-preview) {
+    transform: translateZ(18px);
+  }
   .project-preview {
     height: 210px;
     margin-bottom: 22px;
@@ -423,13 +441,13 @@
     box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 16px 34px rgba(0,0,0,0.18);
     overflow: hidden;
     position: relative;
-    transform: perspective(900px) rotateX(0deg) rotateY(0deg);
+    transform: translateZ(26px) perspective(900px) rotateX(0deg) rotateY(0deg);
     transition: transform 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease;
   }
   .project-card:hover .project-preview {
     border-color: rgba(247,194,106,0.36);
     box-shadow: inset 0 1px 0 rgba(255,255,255,0.12), 0 20px 42px rgba(124,106,247,0.18);
-    transform: perspective(900px) rotateX(2deg) rotateY(-2deg) translateY(-2px);
+    transform: translateZ(34px) perspective(900px) rotateX(2deg) rotateY(-2deg) translateY(-2px);
   }
   .preview-frame,
   .preview-fallback {
@@ -861,6 +879,21 @@
     .contact-grid { grid-template-columns: 1fr; gap: 36px; }
   }
 
+  @media (hover: none), (max-width: 768px) {
+    .projects-grid { perspective: none; }
+    .project-card,
+    .project-card:hover {
+      transform: translateY(var(--parallax-y, 0px));
+      will-change: auto;
+    }
+    .project-card::after { display: none; }
+    .project-card > :not(.project-preview),
+    .project-preview,
+    .project-card:hover .project-preview {
+      transform: none;
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
     *, *::before, *::after {
@@ -869,6 +902,13 @@
       transition-duration: 0.01ms !important;
     }
     #particle-bg { display: none; }
+    .project-card,
+    .project-card:hover,
+    .project-preview,
+    .project-card:hover .project-preview,
+    .project-card > :not(.project-preview) {
+      transform: none;
+    }
   }
 
   /* ── Cursor dot ── */
@@ -1449,16 +1489,25 @@
   // 3D project cards
   if (!reduceMotion && !isSmallDevice) {
     document.querySelectorAll('.project-card').forEach(card => {
+      let tiltFrame = null;
       card.addEventListener('mousemove', e => {
-        const rect = card.getBoundingClientRect();
-        const x = (e.clientX - rect.left) / rect.width - 0.5;
-        const y = (e.clientY - rect.top) / rect.height - 0.5;
-        card.style.setProperty('--tilt-x', `${(-y * 7).toFixed(2)}deg`);
-        card.style.setProperty('--tilt-y', `${(x * 7).toFixed(2)}deg`);
+        if (tiltFrame) cancelAnimationFrame(tiltFrame);
+        tiltFrame = requestAnimationFrame(() => {
+          const rect = card.getBoundingClientRect();
+          const x = (e.clientX - rect.left) / rect.width;
+          const y = (e.clientY - rect.top) / rect.height;
+          card.style.setProperty('--tilt-x', `${((0.5 - y) * 8).toFixed(2)}deg`);
+          card.style.setProperty('--tilt-y', `${((x - 0.5) * 8).toFixed(2)}deg`);
+          card.style.setProperty('--glare-x', `${(x * 100).toFixed(1)}%`);
+          card.style.setProperty('--glare-y', `${(y * 100).toFixed(1)}%`);
+        });
       });
       card.addEventListener('mouseleave', () => {
+        if (tiltFrame) cancelAnimationFrame(tiltFrame);
         card.style.setProperty('--tilt-x', '0deg');
         card.style.setProperty('--tilt-y', '0deg');
+        card.style.setProperty('--glare-x', '50%');
+        card.style.setProperty('--glare-y', '0%');
       });
     });
   }
