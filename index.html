@@ -28,6 +28,16 @@
     font-size: 16px;
     line-height: 1.6;
     overflow-x: hidden;
+    position: relative;
+  }
+
+  #particle-bg {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
   }
 
   /* ── Noise texture overlay ── */
@@ -167,6 +177,11 @@
   .btn-primary {
     background: var(--accent);
     color: #fff;
+  }
+  section,
+  footer {
+    position: relative;
+    z-index: 1;
   }
   .btn-primary:hover { background: #9080ff; transform: translateY(-2px); }
   .btn-cv {
@@ -371,13 +386,18 @@
     gap: 20px;
   }
   .project-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 28px;
-    transition: all 0.25s;
+    background: linear-gradient(145deg, rgba(18,18,26,0.74), rgba(18,18,26,0.38));
+    border: 1px solid rgba(124,106,247,0.2);
+    border-radius: 14px;
+    padding: 18px;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 18px 48px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.06);
+    transform-style: preserve-3d;
+    transform: translateY(var(--parallax-y, 0px)) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
+    transition: border-color 0.25s, box-shadow 0.25s, transform 0.2s;
     position: relative;
     overflow: hidden;
+    will-change: transform;
   }
   .project-card::before {
     content: '';
@@ -389,11 +409,304 @@
     transition: opacity 0.25s;
   }
   .project-card:hover {
-    border-color: var(--accent);
-    transform: translateY(-4px);
-    box-shadow: 0 12px 40px rgba(124,106,247,0.12);
+    border-color: rgba(247,194,106,0.42);
+    box-shadow: 0 24px 60px rgba(124,106,247,0.2), 0 0 34px rgba(124,106,247,0.12), inset 0 1px 0 rgba(255,255,255,0.1);
+    transform: translateY(calc(var(--parallax-y, 0px) - 6px)) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
   }
   .project-card:hover::before { opacity: 1; }
+  .project-preview {
+    height: 210px;
+    margin-bottom: 22px;
+    border: 1px solid rgba(124,106,247,0.22);
+    border-radius: 14px;
+    background: #0b0b14;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 16px 34px rgba(0,0,0,0.18);
+    overflow: hidden;
+    position: relative;
+    transform: perspective(900px) rotateX(0deg) rotateY(0deg);
+    transition: transform 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease;
+  }
+  .project-card:hover .project-preview {
+    border-color: rgba(247,194,106,0.36);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.12), 0 20px 42px rgba(124,106,247,0.18);
+    transform: perspective(900px) rotateX(2deg) rotateY(-2deg) translateY(-2px);
+  }
+  .preview-frame,
+  .preview-fallback {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: 24px;
+  }
+  .preview-frame {
+    width: 1280px;
+    height: 720px;
+    border: 0;
+    transform: scale(var(--preview-scale, 0.22));
+    transform-origin: top left;
+    pointer-events: none;
+    background: #fff;
+    opacity: 0;
+    transition: opacity 0.35s ease;
+  }
+  .project-preview.iframe-ready .preview-frame { opacity: 1; }
+  .project-preview.iframe-ready .preview-fallback { opacity: 0; }
+  .preview-fallback {
+    transition: opacity 0.35s ease;
+  }
+  .preview-dots {
+    height: 24px;
+    padding: 9px 11px;
+    display: flex;
+    gap: 6px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    background: rgba(10,10,15,0.42);
+  }
+  .preview-dots span {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--muted);
+    opacity: 0.8;
+  }
+  .preview-dots span:nth-child(1) { background: #ff6b8a; }
+  .preview-dots span:nth-child(2) { background: var(--accent2); }
+  .preview-dots span:nth-child(3) { background: #6af7c7; }
+  .preview-scene {
+    height: calc(100% - 24px);
+    padding: 12px;
+    position: relative;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: 8px;
+  }
+  .preview-nav {
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.44rem;
+    color: rgba(255,255,255,0.72);
+    letter-spacing: 0;
+  }
+  .preview-logo { font-weight: 800; color: #fff; }
+  .preview-menu { display: flex; gap: 8px; opacity: 0.78; }
+  .preview-body {
+    position: relative;
+    height: 100%;
+    display: grid;
+    gap: 8px;
+    min-height: 0;
+  }
+  .preview-body > div { min-width: 0; }
+  .preview-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(1.12rem, 1.7vw, 1.62rem);
+    line-height: 0.96;
+    letter-spacing: -0.03em;
+    font-weight: 800;
+  }
+  .preview-copy {
+    width: 78%;
+    height: 5px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.34);
+  }
+  .preview-copy.short { width: 48%; }
+  .preview-btn {
+    width: 60px;
+    height: 18px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    box-shadow: 0 0 18px rgba(124,106,247,0.3);
+  }
+  .preview-panel,
+  .preview-stat,
+  .preview-tile {
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.1);
+    box-shadow: 0 12px 22px rgba(0,0,0,0.18);
+  }
+  .preview-panel { border-radius: 8px; }
+  .preview-stat,
+  .preview-tile { border-radius: 6px; }
+  .preview-bar {
+    width: 10px;
+    border-radius: 999px 999px 2px 2px;
+    align-self: end;
+    background: linear-gradient(180deg, var(--accent2), var(--accent));
+  }
+  .preview-ddialer .preview-scene,
+  .preview-sms .preview-scene,
+  .preview-hosting .preview-scene {
+    background: radial-gradient(circle at 78% 28%, rgba(124,106,247,0.32), transparent 30%), linear-gradient(135deg, #121225, #080910);
+  }
+  .preview-dashboard {
+    display: grid;
+    grid-template-columns: 0.62fr 1fr;
+    gap: 8px;
+  }
+  .preview-sidebar {
+    padding: 12px;
+    display: grid;
+    align-content: start;
+    gap: 8px;
+  }
+  .preview-line {
+    height: 7px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.16);
+  }
+  .preview-line:nth-child(2) { width: 76%; }
+  .preview-line:nth-child(3) { width: 58%; }
+  .preview-metrics {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 7px;
+  }
+  .preview-stat { min-height: 28px; }
+  .preview-chart {
+    min-height: 72px;
+    display: flex;
+    align-items: end;
+    gap: 6px;
+    padding: 10px;
+  }
+  .preview-ddialer .preview-bar:nth-child(1) { height: 34%; }
+  .preview-ddialer .preview-bar:nth-child(2) { height: 72%; }
+  .preview-ddialer .preview-bar:nth-child(3) { height: 48%; }
+  .preview-ddialer .preview-bar:nth-child(4) { height: 88%; }
+  .preview-sms .preview-bar:nth-child(1) { height: 40%; }
+  .preview-sms .preview-bar:nth-child(2) { height: 66%; }
+  .preview-sms .preview-bar:nth-child(3) { height: 52%; }
+  .preview-sms .preview-bar:nth-child(4) { height: 82%; }
+  .preview-domain-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+  .preview-domain-grid .preview-panel {
+    min-height: 72px;
+    padding: 10px;
+    display: grid;
+    align-content: space-between;
+  }
+  .preview-landing .preview-scene {
+    background: linear-gradient(135deg, #fff8ef, #ffecec);
+    color: #202235;
+  }
+  .preview-company .preview-scene {
+    background: linear-gradient(135deg, #0a1220, #113d65 62%, #f4f8ff 62%);
+    color: #fff;
+  }
+  .preview-landing .preview-body,
+  .preview-company .preview-body {
+    grid-template-columns: 1.08fr 0.92fr;
+    align-items: center;
+  }
+  .preview-landing .preview-body > div:first-child,
+  .preview-company .preview-body > div:first-child,
+  .preview-ai .preview-body > div:last-child,
+  .preview-event .preview-body > div:last-child,
+  .preview-food .preview-body > div:last-child {
+    display: grid;
+    gap: 8px;
+    align-content: center;
+  }
+  .preview-landing .preview-title span { color: #ff5e73; }
+  .preview-company .preview-title span { color: #9ed8ff; }
+  .preview-landing .preview-copy { background: rgba(32,34,53,0.2); }
+  .preview-hero-visual {
+    height: 90px;
+    border-radius: 12px;
+    background: radial-gradient(circle at 38% 32%, rgba(255,94,115,0.55), transparent 28%), linear-gradient(145deg, rgba(124,106,247,0.24), rgba(255,255,255,0.5));
+    box-shadow: 0 18px 30px rgba(32,34,53,0.14);
+  }
+  .preview-company .service-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+  .preview-company .preview-tile { min-height: 38px; background: rgba(255,255,255,0.82); }
+  .preview-particles .preview-scene {
+    background-image: radial-gradient(circle, rgba(0,255,133,0.55) 1px, transparent 1px), radial-gradient(circle at 50% 45%, rgba(0,255,133,0.18), transparent 52%), linear-gradient(135deg, #06130f, #0a0a11);
+    background-size: 18px 18px, auto, auto;
+  }
+  .preview-particles .preview-body {
+    place-items: center;
+    text-align: center;
+  }
+  .preview-particles .preview-title { color: #20e071; font-size: 1.3rem; }
+  .preview-particles .preview-btn { background: #20e071; box-shadow: 0 0 18px rgba(32,224,113,0.34); }
+  .preview-node-line {
+    position: absolute;
+    width: 120px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(32,224,113,0.7), transparent);
+    transform: rotate(-18deg);
+  }
+  .preview-node {
+    position: absolute;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #20e071;
+    animation: particleFloat 3.4s ease-in-out infinite;
+  }
+  .preview-node:nth-of-type(2) { left: 18%; top: 38%; }
+  .preview-node:nth-of-type(3) { left: 38%; top: 62%; animation-delay: 0.4s; }
+  .preview-node:nth-of-type(4) { left: 66%; top: 34%; animation-delay: 0.8s; }
+  .preview-node:nth-of-type(5) { left: 82%; top: 68%; animation-delay: 1.1s; }
+  .preview-ai .preview-scene {
+    background: linear-gradient(135deg, #06110f, #111029);
+  }
+  .preview-ai .preview-body { grid-template-columns: 1fr 0.8fr; }
+  .preview-ai .vision-frame {
+    border-radius: 8px;
+    border: 1px solid rgba(106,247,199,0.26);
+    background: linear-gradient(135deg, rgba(106,247,199,0.12), rgba(124,106,247,0.18));
+    position: relative;
+  }
+  .preview-ai .vision-frame::before {
+    content: '';
+    position: absolute;
+    inset: 22px 30px;
+    border: 1px solid rgba(247,194,106,0.72);
+    box-shadow: 0 0 18px rgba(247,194,106,0.18);
+  }
+  .preview-ai .preview-title { color: #6af7c7; font-size: 1.04rem; }
+  .preview-event .preview-scene,
+  .preview-food .preview-scene { background: #f7f8fb; color: #151925; }
+  .preview-event .preview-body,
+  .preview-food .preview-body { grid-template-columns: 0.82fr 1.18fr; align-items: center; }
+  .preview-calendar {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+  .preview-calendar span,
+  .preview-food .food-tile {
+    min-height: 26px;
+    border-radius: 5px;
+    background: rgba(124,106,247,0.13);
+    border: 1px solid rgba(124,106,247,0.18);
+  }
+  .preview-food .food-board {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+  .preview-event .preview-title,
+  .preview-food .preview-title { font-size: 1rem; color: #151925; }
+  .preview-event .preview-copy,
+  .preview-food .preview-copy { background: rgba(21,25,37,0.16); }
+  .preview-event .preview-btn,
+  .preview-food .preview-btn { background: #16c784; box-shadow: 0 0 18px rgba(22,199,132,0.24); }
+  @keyframes particleFloat {
+    0%, 100% { transform: translate3d(0,0,0) scale(1); opacity: 0.68; }
+    50% { transform: translate3d(8px,-10px,0) scale(1.25); opacity: 1; }
+  }
   .project-type {
     font-family: 'DM Mono', monospace;
     font-size: 0.68rem;
@@ -540,8 +853,22 @@
     #hero { padding: 0 24px; padding-top: 80px; }
     .hero-stats { display: none; }
     .hero-btns .btn { justify-content: center; }
+    .project-card { padding: 16px; }
+    .project-preview { height: 180px; }
+    .preview-frame { transform: scale(var(--preview-scale, 0.19)); }
+    .preview-scene { padding: 12px; }
     section { padding: 70px 24px; }
     .contact-grid { grid-template-columns: 1fr; gap: 36px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+    #particle-bg { display: none; }
   }
 
   /* ── Cursor dot ── */
@@ -559,6 +886,7 @@
 </head>
 <body>
 
+<canvas id="particle-bg" aria-hidden="true"></canvas>
 <div class="cursor-dot" id="cursor"></div>
 
 <!-- Nav -->
@@ -695,6 +1023,33 @@
   <div class="projects-grid fade-up">
 
     <div class="project-card">
+      <div class="project-preview preview-ddialer" aria-hidden="true">
+        <div class="preview-dots"><span></span><span></span><span></span></div>
+        <iframe class="preview-frame" src="https://sayeb12.github.io/ddialer/" loading="lazy" title="DDIALER preview"></iframe>
+        <div class="preview-fallback preview-scene">
+          <div class="preview-nav"><span class="preview-logo">DDIALER</span><span class="preview-menu"><span>Calls</span><span>Agents</span><span>Reports</span></span></div>
+          <div class="preview-body preview-dashboard">
+            <div class="preview-panel preview-sidebar">
+              <span class="preview-line"></span>
+              <span class="preview-line"></span>
+              <span class="preview-line"></span>
+              <span class="preview-btn"></span>
+            </div>
+            <div>
+              <div class="preview-metrics">
+                <span class="preview-stat"></span>
+                <span class="preview-stat"></span>
+              </div>
+              <div class="preview-panel preview-chart">
+                <span class="preview-bar"></span>
+                <span class="preview-bar"></span>
+                <span class="preview-bar"></span>
+                <span class="preview-bar"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="project-type">Professional · VoIP</div>
       <div class="project-name">DDIALER Platform</div>
       <p class="project-desc">Full-featured VoIP service platform with user management, billing systems, call routing infrastructure, and real-time monitoring dashboard.</p>
@@ -711,6 +1066,32 @@
     </div>
 
     <div class="project-card">
+      <div class="project-preview preview-sms" aria-hidden="true">
+        <div class="preview-dots"><span></span><span></span><span></span></div>
+        <iframe class="preview-frame" src="https://bulksms.dialdynamic.com" loading="lazy" title="BULK SMS preview"></iframe>
+        <div class="preview-fallback preview-scene">
+          <div class="preview-nav"><span class="preview-logo">BULK SMS</span><span class="preview-menu"><span>Campaigns</span><span>Reports</span></span></div>
+          <div class="preview-body preview-dashboard">
+            <div class="preview-panel preview-sidebar">
+              <span class="preview-line"></span>
+              <span class="preview-line"></span>
+              <span class="preview-btn"></span>
+            </div>
+            <div>
+              <div class="preview-metrics">
+                <span class="preview-stat"></span>
+                <span class="preview-stat"></span>
+              </div>
+              <div class="preview-panel preview-chart">
+                <span class="preview-bar"></span>
+                <span class="preview-bar"></span>
+                <span class="preview-bar"></span>
+                <span class="preview-bar"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="project-type">Professional · Marketing</div>
       <div class="project-name">BULK SMS Platform</div>
       <p class="project-desc">Enterprise-grade SMS marketing solution with campaign management, detailed analytics, contact segmentation, and automated scheduling.</p>
@@ -726,6 +1107,31 @@
     </div>
 
     <div class="project-card">
+      <div class="project-preview preview-hosting" aria-hidden="true">
+        <div class="preview-dots"><span></span><span></span><span></span></div>
+        <iframe class="preview-frame" src="https://sayeb12.github.io/ddhoster/" loading="lazy" title="DDHOSTER preview"></iframe>
+        <div class="preview-fallback preview-scene">
+          <div class="preview-nav"><span class="preview-logo">DDHOSTER</span><span class="preview-menu"><span>Domains</span><span>Hosting</span></span></div>
+          <div class="preview-body">
+            <div class="preview-domain-grid">
+              <div class="preview-panel">
+                <span class="preview-line"></span>
+                <span class="preview-line"></span>
+                <span class="preview-btn"></span>
+              </div>
+              <div class="preview-panel">
+                <span class="preview-line"></span>
+                <span class="preview-line"></span>
+                <span class="preview-stat"></span>
+              </div>
+            </div>
+            <div class="preview-metrics">
+              <span class="preview-stat"></span>
+              <span class="preview-stat"></span>
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="project-type">Professional · Hosting</div>
       <div class="project-name">DDHOSTER</div>
       <p class="project-desc">Web hosting management platform with automated domain registration, hosting plan provisioning, and cPanel/WHM API integration.</p>
@@ -741,6 +1147,22 @@
     </div>
 
     <div class="project-card">
+      <div class="project-preview preview-landing" aria-hidden="true">
+        <div class="preview-dots"><span></span><span></span><span></span></div>
+        <iframe class="preview-frame" src="https://sayeb12.github.io/Floka/" loading="lazy" title="Floka preview"></iframe>
+        <div class="preview-fallback preview-scene">
+          <div class="preview-nav"><span class="preview-logo">Floka</span><span class="preview-menu"><span>Home</span><span>About</span><span>Pricing</span></span></div>
+          <div class="preview-body">
+            <div>
+              <div class="preview-title">Build Your <span>Landing</span></div>
+              <div class="preview-copy"></div>
+              <div class="preview-copy short"></div>
+              <div class="preview-btn"></div>
+            </div>
+            <div class="preview-hero-visual"></div>
+          </div>
+        </div>
+      </div>
       <div class="project-type">Frontend · Landing Page</div>
       <div class="project-name">Floka Landing Page</div>
       <p class="project-desc">Modern responsive landing page with smooth animations, interactive UI components, mobile-first layout, and optimized performance.</p>
@@ -755,6 +1177,26 @@
     </div>
 
     <div class="project-card">
+      <div class="project-preview preview-company" aria-hidden="true">
+        <div class="preview-dots"><span></span><span></span><span></span></div>
+        <iframe class="preview-frame" src="https://sayeb12.github.io/dialdynamic/" loading="lazy" title="DIAL DYNAMIC preview"></iframe>
+        <div class="preview-fallback preview-scene">
+          <div class="preview-nav"><span class="preview-logo">Dial Dynamic</span><span class="preview-menu"><span>Services</span><span>Portal</span><span>Contact</span></span></div>
+          <div class="preview-body">
+            <div>
+              <div class="preview-title">Telecom <span>Solutions</span></div>
+              <div class="preview-copy"></div>
+              <div class="preview-btn"></div>
+            </div>
+            <div class="service-grid">
+              <span class="preview-tile"></span>
+              <span class="preview-tile"></span>
+              <span class="preview-tile"></span>
+              <span class="preview-tile"></span>
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="project-type">Professional · Company Website</div>
       <div class="project-name">DIAL DYNAMIC Company Website</div>
       <p class="project-desc">Corporate website for telecommunication services with responsive frontend, service showcase, client portal integration, and admin dashboard for content management.</p>
@@ -770,6 +1212,20 @@
     </div>
 
     <div class="project-card">
+      <div class="project-preview preview-particles" aria-hidden="true">
+        <div class="preview-dots"><span></span><span></span><span></span></div>
+        <iframe class="preview-frame" src="https://sayeb12.github.io/particle-system/" loading="lazy" title="Particle System preview"></iframe>
+        <div class="preview-fallback preview-scene">
+          <div class="preview-nav"><span class="preview-logo">Particles</span><span class="preview-menu"><span>Canvas</span><span>Mouse</span></span></div>
+          <span class="preview-node-line"></span>
+          <span class="preview-node"></span><span class="preview-node"></span><span class="preview-node"></span><span class="preview-node"></span>
+          <div class="preview-body">
+            <div class="preview-title">Particle System</div>
+            <div class="preview-copy short"></div>
+            <div class="preview-btn"></div>
+          </div>
+        </div>
+      </div>
       <div class="project-type">Creative · Animation</div>
       <div class="project-name">Particle System</div>
       <p class="project-desc">Interactive particle animation system built with HTML5 Canvas and JavaScript. It includes dynamic particle behavior, mouse interaction, and real-time rendering.</p>
@@ -784,6 +1240,21 @@
     </div>
 
     <div class="project-card">
+      <div class="project-preview preview-ai" aria-hidden="true">
+        <div class="preview-dots"><span></span><span></span><span></span></div>
+        <div class="preview-scene">
+          <div class="preview-nav"><span class="preview-logo">HAR AI</span><span class="preview-menu"><span>Vision</span><span>Model</span></span></div>
+          <div class="preview-body">
+            <div class="vision-frame"></div>
+            <div>
+              <div class="preview-title">Activity Recognition</div>
+              <div class="preview-copy"></div>
+              <div class="preview-copy short"></div>
+              <div class="preview-stat"></div>
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="project-type">Academic · Deep Learning</div>
       <div class="project-name">Human Activity Recognition</div>
       <p class="project-desc">Thesis project: real-time CV system for elderly care monitoring. Achieved 92% accuracy on benchmark datasets using CNN and LSTM architectures.</p>
@@ -799,6 +1270,25 @@
     </div>
 
     <div class="project-card">
+      <div class="project-preview preview-event" aria-hidden="true">
+        <div class="preview-dots"><span></span><span></span><span></span></div>
+        <div class="preview-scene">
+          <div class="preview-nav"><span class="preview-logo">EventORG</span><span class="preview-menu"><span>Events</span><span>Users</span></span></div>
+          <div class="preview-body">
+            <div class="preview-calendar">
+              <span></span><span></span><span></span>
+              <span></span><span></span><span></span>
+              <span></span><span></span><span></span>
+            </div>
+            <div>
+              <div class="preview-title">Event Dashboard</div>
+              <div class="preview-copy"></div>
+              <div class="preview-copy short"></div>
+              <div class="preview-btn"></div>
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="project-type">Academic · Event Management</div>
       <div class="project-name">EventORG</div>
       <p class="project-desc">Complete event management solution with registration, scheduling, automated notifications, and role-based access for organizers, vendors, and attendees.</p>
@@ -814,6 +1304,26 @@
     </div>
 
     <div class="project-card">
+      <div class="project-preview preview-food" aria-hidden="true">
+        <div class="preview-dots"><span></span><span></span><span></span></div>
+        <div class="preview-scene">
+          <div class="preview-nav"><span class="preview-logo">HomeFood</span><span class="preview-menu"><span>Orders</span><span>Map</span></span></div>
+          <div class="preview-body">
+            <div class="food-board">
+              <span class="food-tile"></span>
+              <span class="food-tile"></span>
+              <span class="food-tile"></span>
+              <span class="food-tile"></span>
+            </div>
+            <div>
+              <div class="preview-title">Food Orders</div>
+              <div class="preview-copy"></div>
+              <div class="preview-copy short"></div>
+              <div class="preview-btn"></div>
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="project-type">IDP · Food Tech</div>
       <div class="project-name">Homemade Food Delivery</div>
       <p class="project-desc">Platform connecting home chefs with local customers. Features order management, real-time delivery tracking, payment integration, and Google Maps routing.</p>
@@ -895,12 +1405,17 @@
 </footer>
 
 <script>
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const isSmallDevice = window.matchMedia('(max-width: 768px)').matches;
+
   // Cursor
   const cursor = document.getElementById('cursor');
-  document.addEventListener('mousemove', e => {
-    cursor.style.left = e.clientX - 4 + 'px';
-    cursor.style.top  = e.clientY - 4 + 'px';
-  });
+  if (cursor && !isSmallDevice) {
+    document.addEventListener('mousemove', e => {
+      cursor.style.left = e.clientX - 4 + 'px';
+      cursor.style.top  = e.clientY - 4 + 'px';
+    });
+  }
 
   // Scroll reveal
   const obs = new IntersectionObserver(entries => {
@@ -913,6 +1428,137 @@
   }, { threshold: 0.12 });
 
   document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
+
+  // Live previews
+  document.querySelectorAll('.preview-frame').forEach(frame => {
+    frame.addEventListener('load', () => {
+      frame.closest('.project-preview')?.classList.add('iframe-ready');
+    });
+  });
+
+  function sizePreviewFrames() {
+    document.querySelectorAll('.project-preview').forEach(preview => {
+      const rect = preview.getBoundingClientRect();
+      const scale = Math.max(0.14, Math.min(rect.width / 1280, (rect.height - 24) / 720));
+      preview.style.setProperty('--preview-scale', scale.toFixed(3));
+    });
+  }
+  sizePreviewFrames();
+  window.addEventListener('resize', sizePreviewFrames);
+
+  // 3D project cards
+  if (!reduceMotion && !isSmallDevice) {
+    document.querySelectorAll('.project-card').forEach(card => {
+      card.addEventListener('mousemove', e => {
+        const rect = card.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width - 0.5;
+        const y = (e.clientY - rect.top) / rect.height - 0.5;
+        card.style.setProperty('--tilt-x', `${(-y * 7).toFixed(2)}deg`);
+        card.style.setProperty('--tilt-y', `${(x * 7).toFixed(2)}deg`);
+      });
+      card.addEventListener('mouseleave', () => {
+        card.style.setProperty('--tilt-x', '0deg');
+        card.style.setProperty('--tilt-y', '0deg');
+      });
+    });
+  }
+
+  // Subtle scroll depth
+  const heroGlow = document.querySelector('.hero-glow');
+  const heroContent = document.querySelector('.hero-content');
+  const projectCards = [...document.querySelectorAll('.project-card')];
+  const parallaxTick = () => {
+    if (reduceMotion) return;
+    const scrollY = window.scrollY;
+    if (heroGlow) heroGlow.style.transform = `translate(-50%, calc(-50% + ${scrollY * 0.08}px))`;
+    if (heroContent) heroContent.style.transform = `translateY(${scrollY * -0.025}px)`;
+    if (!isSmallDevice) {
+      projectCards.forEach((card, index) => {
+        const rect = card.getBoundingClientRect();
+        const offset = ((rect.top + rect.height / 2) - window.innerHeight / 2) * -0.012;
+        card.style.setProperty('--parallax-y', `${Math.max(-10, Math.min(10, offset + (index % 3) * 1.5)).toFixed(2)}px`);
+      });
+    }
+    requestAnimationFrame(parallaxTick);
+  };
+  requestAnimationFrame(parallaxTick);
+
+  // Canvas particle background
+  const canvas = document.getElementById('particle-bg');
+  const ctx = canvas?.getContext('2d');
+  const pointer = { x: -9999, y: -9999 };
+  let particles = [];
+  let width = 0;
+  let height = 0;
+  let pixelRatio = 1;
+
+  function resizeParticles() {
+    if (!canvas || !ctx) return;
+    pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+    width = window.innerWidth;
+    height = window.innerHeight;
+    canvas.width = width * pixelRatio;
+    canvas.height = height * pixelRatio;
+    canvas.style.width = width + 'px';
+    canvas.style.height = height + 'px';
+    ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+    const count = isSmallDevice ? 34 : Math.min(92, Math.floor((width * height) / 15000));
+    particles = Array.from({ length: count }, () => ({
+      x: Math.random() * width,
+      y: Math.random() * height,
+      vx: (Math.random() - 0.5) * 0.35,
+      vy: (Math.random() - 0.5) * 0.35,
+      r: Math.random() * 1.8 + 0.6
+    }));
+  }
+
+  function drawParticles() {
+    if (!canvas || !ctx || reduceMotion) return;
+    ctx.clearRect(0, 0, width, height);
+    ctx.fillStyle = 'rgba(124,106,247,0.75)';
+
+    particles.forEach((p, i) => {
+      const dx = pointer.x - p.x;
+      const dy = pointer.y - p.y;
+      const dist = Math.hypot(dx, dy);
+      if (dist < 120 && !isSmallDevice) {
+        p.x -= dx * 0.006;
+        p.y -= dy * 0.006;
+      }
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.x < 0 || p.x > width) p.vx *= -1;
+      if (p.y < 0 || p.y > height) p.vy *= -1;
+
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fill();
+
+      for (let j = i + 1; j < particles.length; j++) {
+        const q = particles[j];
+        const gap = Math.hypot(p.x - q.x, p.y - q.y);
+        if (gap < 125) {
+          ctx.strokeStyle = `rgba(124,106,247,${(1 - gap / 125) * 0.16})`;
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(p.x, p.y);
+          ctx.lineTo(q.x, q.y);
+          ctx.stroke();
+        }
+      }
+    });
+    requestAnimationFrame(drawParticles);
+  }
+
+  if (canvas && ctx && !reduceMotion) {
+    resizeParticles();
+    drawParticles();
+    window.addEventListener('resize', resizeParticles);
+    window.addEventListener('mousemove', e => {
+      pointer.x = e.clientX;
+      pointer.y = e.clientY;
+    });
+  }
 </script>
 </body>
 </html>
