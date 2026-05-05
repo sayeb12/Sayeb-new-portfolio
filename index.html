@@ -467,6 +467,56 @@
     border-color: rgba(247,194,106,0.3);
   }
 
+  /* About */
+  .about-card {
+    max-width: 860px;
+    padding: 34px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: linear-gradient(145deg, rgba(18,18,26,0.72), rgba(18,18,26,0.36));
+    backdrop-filter: blur(18px);
+    box-shadow: 0 18px 48px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.06);
+    position: relative;
+    overflow: hidden;
+  }
+  .about-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 18% 20%, rgba(124,106,247,0.18), transparent 34%),
+                radial-gradient(circle at 86% 70%, rgba(247,194,106,0.12), transparent 36%);
+    pointer-events: none;
+  }
+  .about-card p {
+    position: relative;
+    color: #b0b0cc;
+    font-size: 1.02rem;
+    line-height: 1.8;
+  }
+  .about-highlights {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 24px;
+  }
+  .about-highlight {
+    padding: 9px 13px;
+    border-radius: 999px;
+    border: 1px solid rgba(124,106,247,0.24);
+    background: rgba(255,255,255,0.055);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    box-shadow: 0 10px 24px rgba(0,0,0,0.16), inset 0 1px 0 rgba(255,255,255,0.08);
+  }
+  .about-highlight:nth-child(2),
+  .about-highlight:nth-child(4) {
+    border-color: rgba(247,194,106,0.28);
+    color: var(--accent2);
+  }
+
   /* ── Experience ── */
   .timeline { position: relative; padding-left: 28px; }
   .timeline::before {
@@ -1095,6 +1145,7 @@
   <div class="nav-logo">SAYEB</div>
   <ul class="nav-links">
     <li><a href="#about">About</a></li>
+    <li><a href="#skills">Skills</a></li>
     <li><a href="#experience">Experience</a></li>
     <li><a href="#projects">Projects</a></li>
     <li><a href="#research">Research</a></li>
@@ -1151,10 +1202,27 @@
   </div>
 </section>
 
-<!-- Skills -->
+<!-- About -->
 <section id="about">
   <div class="fade-up">
-    <div class="section-label">// 01 — Skills</div>
+    <div class="section-label">// 01 — About</div>
+    <h2 class="section-title">About Me</h2>
+  </div>
+  <div class="about-card reveal-left">
+    <p>I am MD Abu Ubaida Jubaer Sayeb, a Full Stack Developer from Dhaka, Bangladesh. I build responsive web applications, VoIP platforms, hosting systems, and intelligent computer vision solutions. I enjoy creating clean user interfaces, scalable backend systems, and smooth digital experiences.</p>
+    <div class="about-highlights">
+      <span class="about-highlight">Full Stack Developer</span>
+      <span class="about-highlight">CV Researcher</span>
+      <span class="about-highlight">CSE Graduate</span>
+      <span class="about-highlight">Dhaka, Bangladesh</span>
+    </div>
+  </div>
+</section>
+
+<!-- Skills -->
+<section id="skills">
+  <div class="fade-up">
+    <div class="section-label">// 02 — Skills</div>
     <h2 class="section-title">Technical Arsenal</h2>
   </div>
   <div class="skills-grid fade-up">
@@ -1182,7 +1250,7 @@
 <!-- Experience -->
 <section id="experience">
   <div class="fade-up">
-    <div class="section-label">// 02 — Experience</div>
+    <div class="section-label">// 03 — Experience</div>
     <h2 class="section-title">Where I've Worked</h2>
   </div>
   <div class="timeline fade-up">
@@ -1229,7 +1297,7 @@
 <!-- Projects -->
 <section id="projects">
   <div class="fade-up">
-    <div class="section-label">// 03 — Projects</div>
+    <div class="section-label">// 04 — Projects</div>
     <h2 class="section-title">Things I've Built</h2>
   </div>
   <div class="projects-grid fade-up">
@@ -1556,7 +1624,7 @@
 <!-- Research -->
 <section id="research">
   <div class="fade-up">
-    <div class="section-label">// 04 — Research</div>
+    <div class="section-label">// 05 — Research</div>
     <h2 class="section-title">Academic Work</h2>
   </div>
   <div class="research-card fade-up">
@@ -1582,7 +1650,7 @@
 <section id="contact" style="max-width:1200px;">
   <div class="contact-grid">
     <div class="contact-text fade-up">
-      <div class="section-label">// 05 — Contact</div>
+      <div class="section-label">// 06 — Contact</div>
       <h2 class="section-title" style="margin-bottom:14px;">Let's Talk</h2>
       <p>Open to freelance projects, full-time opportunities, and research collaborations. Drop me a message and I'll get back to you.</p>
       <a href="mailto:sayebahmed1234@gmail.com" class="btn btn-primary" style="width:fit-content;">Send an Email →</a>
@@ -1637,7 +1705,7 @@
     });
   };
 
-  setReveal('#about .skill-pill', 'reveal-scale', 45);
+  setReveal('#skills .skill-pill', 'reveal-scale', 45);
   setReveal('#experience .timeline-item', 'reveal-left', 120);
   setReveal('#projects .project-card', 'reveal-scale', 85);
   setReveal('#contact .contact-text', 'reveal-left', 0);
