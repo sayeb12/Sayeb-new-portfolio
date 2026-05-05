@@ -169,6 +169,44 @@
     color: #fff;
   }
   .btn-primary:hover { background: #9080ff; transform: translateY(-2px); }
+  .btn-cv {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    color: #fff;
+    border: 1px solid rgba(247,194,106,0.36);
+    background: linear-gradient(135deg, var(--accent) 0%, #9b7bff 45%, var(--accent2) 100%);
+    box-shadow: 0 0 22px rgba(124,106,247,0.32), 0 8px 28px rgba(247,194,106,0.12);
+    transform: translateZ(0);
+  }
+  .btn-cv::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    z-index: -1;
+    background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.34) 45%, transparent 62%);
+    transform: translateX(-130%) skewX(-18deg);
+    transition: transform 0.55s ease;
+  }
+  .btn-cv::after {
+    content: '';
+    position: absolute;
+    inset: 1px;
+    z-index: -2;
+    border-radius: inherit;
+    background: linear-gradient(135deg, rgba(255,255,255,0.12), rgba(255,255,255,0));
+    opacity: 0.75;
+  }
+  .btn-cv .btn-icon {
+    display: inline-block;
+    transition: transform 0.25s ease;
+  }
+  .btn-cv:hover {
+    transform: translateY(-3px) scale(1.035);
+    box-shadow: 0 0 34px rgba(124,106,247,0.48), 0 12px 36px rgba(247,194,106,0.2);
+  }
+  .btn-cv:hover::before { transform: translateX(130%) skewX(-18deg); }
+  .btn-cv:hover .btn-icon { transform: translateY(2px); }
   .btn-outline {
     background: transparent;
     color: var(--text);
@@ -501,6 +539,7 @@
     .nav-links { display: none; }
     #hero { padding: 0 24px; padding-top: 80px; }
     .hero-stats { display: none; }
+    .hero-btns .btn { justify-content: center; }
     section { padding: 70px 24px; }
     .contact-grid { grid-template-columns: 1fr; gap: 36px; }
   }
@@ -551,6 +590,9 @@
     <div class="hero-btns">
       <a href="#projects" class="btn btn-primary">View Projects ↓</a>
       <a href="mailto:sayebahmed1234@gmail.com" class="btn btn-outline">Get in Touch →</a>
+      <a href="Sayebs_latest_resume.pdf" class="btn btn-cv" download>
+        Download CV <span class="btn-icon">↓</span>
+      </a>
     </div>
   </div>
   <div class="hero-stats">
@@ -695,6 +737,49 @@
       </div>
       <div class="project-links">
         <a href="https://sayeb12.github.io/ddhoster/" target="_blank" class="project-link">↗ Live Demo</a>
+      </div>
+    </div>
+
+    <div class="project-card">
+      <div class="project-type">Frontend · Landing Page</div>
+      <div class="project-name">Floka Landing Page</div>
+      <p class="project-desc">Modern responsive landing page with smooth animations, interactive UI components, mobile-first layout, and optimized performance.</p>
+      <div class="project-tech">
+        <span class="tech-tag">HTML5</span>
+        <span class="tech-tag">CSS3</span>
+        <span class="tech-tag">JavaScript</span>
+      </div>
+      <div class="project-links">
+        <a href="https://sayeb12.github.io/Floka/" target="_blank" class="project-link">↗ Live Demo</a>
+      </div>
+    </div>
+
+    <div class="project-card">
+      <div class="project-type">Professional · Company Website</div>
+      <div class="project-name">DIAL DYNAMIC Company Website</div>
+      <p class="project-desc">Corporate website for telecommunication services with responsive frontend, service showcase, client portal integration, and admin dashboard for content management.</p>
+      <div class="project-tech">
+        <span class="tech-tag">PHP</span>
+        <span class="tech-tag">MySQL</span>
+        <span class="tech-tag">JavaScript</span>
+        <span class="tech-tag">HTML/CSS</span>
+      </div>
+      <div class="project-links">
+        <a href="https://sayeb12.github.io/dialdynamic/" target="_blank" class="project-link">↗ Live Demo</a>
+      </div>
+    </div>
+
+    <div class="project-card">
+      <div class="project-type">Creative · Animation</div>
+      <div class="project-name">Particle System</div>
+      <p class="project-desc">Interactive particle animation system built with HTML5 Canvas and JavaScript. It includes dynamic particle behavior, mouse interaction, and real-time rendering.</p>
+      <div class="project-tech">
+        <span class="tech-tag">JavaScript</span>
+        <span class="tech-tag">HTML5 Canvas</span>
+        <span class="tech-tag">CSS</span>
+      </div>
+      <div class="project-links">
+        <a href="https://sayeb12.github.io/particle-system/" target="_blank" class="project-link">↗ Live Demo</a>
       </div>
     </div>
 
